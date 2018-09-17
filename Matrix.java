@@ -17,6 +17,10 @@ public class Matrix {
         }
     }
 
+    public static Matrix duplicate(Matrix other){
+        return new Matrix(other.board);
+    }
+
     // swap 2 rows with firstRow and secondRow position
     public void swapRows(int firstRow, int secondRow){
         Row middle = rows[firstRow];
@@ -90,11 +94,13 @@ public class Matrix {
         }
 
     }
-
+    // apply Gauss on a Matrix
     public Matrix applyGaussElimination(){
         Matrix ret = new Matrix(this.board);
         ret.sortRows();
-        
+        //CUI.debug(1);
+        ret.display();
+
         // pivot 
         // eg: [5 2 3] and [4 5 6]
         // we have to eliminate the 4
@@ -119,9 +125,11 @@ public class Matrix {
             // scale every thing down by the first element
             ret.scale(i, (double) (1.0/ret.rows[i].firstValue()) );
         }
+        //CUI.debug();
+        ret.sortRows();
         return ret;
     }
-
+    // apply Gauss Jordan on a Matrix
     public Matrix applyGaussJordanElimination(){
         Matrix ret = new Matrix(this.board);
         ret.sortRows();
@@ -146,7 +154,7 @@ public class Matrix {
                  
             }
         }
-        // Here comes real GaussJordan
+        // Here comes real Gauss7Jordan
         for(int i = ret.rows.length - 1; i >= 0;i--){
             // 4 in the above example
             
@@ -165,6 +173,38 @@ public class Matrix {
         for(int i = 0; i < ret.rows.length; i++){
             // scale every thing down by the first element
             ret.scale(i, (double) (1.0/ret.rows[i].firstValue()) );
+        }
+        ret.sortRows();
+        return ret;
+    }
+    // add this Matrix with another and return the result
+    // return null if the addition is undefined
+    public Matrix addMatrix(Matrix other){
+        Matrix ret = Matrix.duplicate(other);
+        if(ret.numberOfRows != this.numberOfRows && ret.numberOfColumns == this.numberOfColumns){
+            System.out.println("Cannot add two Matrix with different size");
+            return null;
+        }
+        for(int i = 0;i < ret.numberOfRows;i++){
+            ret.rows[i] = ret.rows[i].add(this.rows[i]);
+        }
+        return ret;
+    }
+    // multiply this Matrix with another and return the result
+    // return null if the multiplication is undefined
+    public Matrix multiplyMatrix(Matrix other){
+        Matrix ret = Matrix.duplicate(new Matrix(new double[this.numberOfRows][other.numberOfColumns]));
+        if(ret.numberOfColumns != this.numberOfRows){
+            System.out.println("Cannot multiply two Matrix like this");
+            return null;
+        }
+        int n = other.numberOfRows;
+        for (int i = 0; i < ret.numberOfRows; i++){
+            for(int j = 0; j < ret.numberOfColumns; j++){
+                for(int k = 0; k < n; k++){
+                    ret.rows[i].assignAt(j, this.rows[i].valueAt(k) * other.rows[k].valueAt(j));
+                }
+            }
         }
         return ret;
     }

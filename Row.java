@@ -62,6 +62,10 @@ public class Row {
         return this.element[position];
     }
 
+    public void assignAt(int position, double value){
+        element[position] = value;
+    }
+
     public double firstValue(){
         return valueAt(positionOfLeadingOne);
     }
